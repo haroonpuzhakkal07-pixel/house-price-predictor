@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>House Price Prediction</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .container {
+            width: min(1000px, 92%);
+            margin: 40px auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #6b7280;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field label {
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .prediction {
+            margin-top: 30px;
+            padding: 24px;
+            text-align: center;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 10px;
+        }
+
+        .prediction h2 {
+            margin: 0 0 10px;
+            border: none;
+        }
+
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>House Price Prediction</h1>
+        <p>Enter the property details to estimate its sale price.</p>
+    </div>
+
+    <div class="card">
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div style="
+                    background: #fee2e2;
+                    border: 1px solid #fecaca;
+                    color: #991b1b;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                    border-radius: 8px;
+                ">
+                    <strong>Please correct the following errors:</strong>
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
+            <div class="section">
+                <h2>Property Details</h2>
+
+                <div class="form-grid">
+                    <div class="field">
+                        {{ form.overall_qual.label_tag }}
+                        {{ form.overall_qual }}
+                        {% for error in form.overall_qual.errors %}
+                            <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="field">
+                        {{ form.overall_cond.label_tag }}
+                        {{ form.overall_cond }}
+                        {% for error in form.overall_cond.errors %}
+                            <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="field">
+                        {{ form.neighborhood.label_tag }}
+                        {{ form.neighborhood }}
+                        {% for error in form.neighborhood.errors %}
+                            <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2>Size & Rooms</h2>
+
+                <div class="form-grid">
+                    <div class="field">
+                        {{ form.gr_liv_area.label_tag }}
+                        {{ form.gr_liv_area }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.lot_area.label_tag }}
+                        {{ form.lot_area }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.year_built.label_tag }}
+                        {{ form.year_built }}
+                        {% for error in form.year_built.errors %}
+                            <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="field">
+                        {{ form.year_remod_add.label_tag }}
+                        {{ form.year_remod_add }}
+                        {% for error in form.year_remod_add.errors %}
+                            <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="field">
+                        {{ form.total_bsmt_sf.label_tag }}
+                        {{ form.total_bsmt_sf }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.first_flr_sf.label_tag }}
+                        {{ form.first_flr_sf }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.second_flr_sf.label_tag }}
+                        {{ form.second_flr_sf }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.bedroom_abv_gr.label_tag }}
+                        {{ form.bedroom_abv_gr }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.tot_rms_abv_grd.label_tag }}
+                        {{ form.tot_rms_abv_grd }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.full_bath.label_tag }}
+                        {{ form.full_bath }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.half_bath.label_tag }}
+                        {{ form.half_bath }}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2>Quality</h2>
+
+                <div class="form-grid">
+                    <div class="field">
+                        {{ form.exter_qual.label_tag }}
+                        {{ form.exter_qual }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.kitchen_qual.label_tag }}
+                        {{ form.kitchen_qual }}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2>Garage</h2>
+
+                <div class="form-grid">
+                    <div class="field">
+                        {{ form.garage_cars.label_tag }}
+                        {{ form.garage_cars }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.garage_area.label_tag }}
+                        {{ form.garage_area }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.garage_yr_blt.label_tag }}
+                        {{ form.garage_yr_blt }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.garage_finish.label_tag }}
+                        {{ form.garage_finish }}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2>Basement</h2>
+
+                <div class="form-grid">
+                    <div class="field">
+                        {{ form.bsmt_qual.label_tag }}
+                        {{ form.bsmt_qual }}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2>Sale Information</h2>
+
+                <div class="form-grid">
+                    <div class="field">
+                        {{ form.year_sold.label_tag }}
+                        {{ form.year_sold }}
+                    </div>
+
+                    <div class="field">
+                        {{ form.month_sold.label_tag }}
+                        {{ form.month_sold }}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="button-container">
+                <button type="submit">Predict House Price</button>
+            </div>
+
+        </form>
+
+
+        {% if prediction %}
+            <div class="prediction">
+                <h2>Predicted Sale Price</h2>
+
+                <div class="price">
+                    ${{ prediction|floatformat:2 }}
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
